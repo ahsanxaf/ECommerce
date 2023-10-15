@@ -4,13 +4,16 @@ import AppNavigator from './navigations/AppNavigator';
 import {Provider} from 'react-redux'
 import Store from './redux/Store';
 import {ModalPortal} from 'react-native-modals';
+import {UserContext} from './UserContext';
 
 function App() {
   return (
     <View style={{flex: 1}}>
       <Provider store={Store}>
-        <AppNavigator/>
-        <ModalPortal/>
+        <UserContext>
+          <AppNavigator/>
+          <ModalPortal/>
+        </UserContext>
       </Provider>
     </View>
   );

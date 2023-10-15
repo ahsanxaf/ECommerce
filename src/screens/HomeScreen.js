@@ -9,7 +9,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext} from "react";
 import { SliderBox } from "react-native-image-slider-box";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
@@ -22,6 +22,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import {BottomModal, SlideAnimation, ModalContent} from 'react-native-modals';
 import Header from "../components/Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {userType} from '../UserContext'
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -29,6 +31,9 @@ const HomeScreen = () => {
   const [open, setOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [category, setCategory] = useState("jewelery");
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress,setSelectedAddress] = useState("");
+  const { userId, setUserId } = useContext(userType);
   const [items, setItems] = useState([
     { label: "Men's clothing", value: "men's clothing" },
     { label: "jewelery", value: "jewelery" },
@@ -222,7 +227,38 @@ const HomeScreen = () => {
     setCompanyOpen(false);
   }, []);
 
-  const cart = useSelector((state) => state.cart.cart);
+  useEffect(() => {
+    if(userId){
+      fetchAddresses();
+    }
+  }, [userId, modalVisible]);
+  const fetchAddresses = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.219.209:8000/address/${userId}`
+      );
+      const { addresses } = response.data;
+
+      setAddresses(addresses);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUser = async() => {
+      const token =await AsyncStorage.getItem('authToken'); 
+      const decodeToken = jwtDecode(token);
+      const userId = decodeToken.userId;
+      setUserId(userId);
+    }
+
+    fetchUser();
+
+  }, [])
+  console.log("addresses", addresses);
+
+  // const cart = useSelector((state) => state.cart.cart);
 
   return (
     <>
@@ -242,7 +278,15 @@ const HomeScreen = () => {
             <Ionicons name="location-outline" size={24} color="black" />
             <Pressable>
               <Text style={{ fontSize: 13, fontWeight: "500" }}>
-                Deliver to Ahsan - Islamabad
+                {selectedAddress ? (
+                  <Text>
+                    Deliver to {selectedAddress?.name} - {selectedAddress?.street}
+                  </Text>
+                ) : (
+                  <Text style={{ fontSize: 13, fontWeight: "500" }}>
+                      Add a Address
+                  </Text>
+                )}
               </Text>
             </Pressable>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
@@ -454,6 +498,37 @@ const HomeScreen = () => {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* already added addresses */}
+
+            {addresses.map((item, index) => (
+              <Pressable style={[styles.addressContainer, {backgroundColor:selectedAddress === item ? "#FBCEB1" : "white"}]} onPress={() => setSelectedAddress(item)}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                  <Text style={{ fontSize: 13, fontWeight: "bold" }}>{item?.name}</Text>
+                  <Entypo name="location-pin" size={24} color="red" />
+                </View>
+
+                <Text
+                  numberOfLines={1}
+                  style={{ width: 130, fontSize: 13, textAlign: "center" }}
+                >
+                  {item?.houseNo},{item?.landmark}
+                </Text>
+
+                <Text
+                  numberOfLines={1}
+                  style={{ width: 130, fontSize: 13, textAlign: "center" }}
+                >
+                  {item?.street}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{ width: 130, fontSize: 13, textAlign: "center" }}
+                >
+                  Pakistan, Islamabad
+                </Text>
+
+              </Pressable>
+            ))}
+            
             <Pressable style={styles.modalButton} onPress={() => {
               setModalVisible(false);
               navigation.navigate('AddAddress')
@@ -504,5 +579,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#0066b2',
     fontWeight: '500'
+  },
+  addressContainer: {
+    width: 140,
+    height: 140,
+    borderColor: "#D0D0D0",
+    borderWidth: 1,
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 3,
+    marginRight: 15,
+    marginTop: 10,
+    // backgroundColor:selectedAddress === item ? "#FBCEB1" : "white"
   }
 });

@@ -151,7 +151,7 @@ app.post('/address', async(req, res) => {
         const user = await User.findById(userId);
 
         if(!user){
-            res.status(404).json({message: 'User not found'})
+           return res.status(404).json({message: 'User not found'})
         }
 
         user.addresses.push(address);
@@ -165,5 +165,17 @@ app.post('/address', async(req, res) => {
 
 // endpoint to get all the addresses of a particular user
 app.get('/address/:userId', async(req, res) => {
-    
+    try {
+        const userId = req.params.userId;
+        const user = await User.findById(userId);
+        if(!user){
+           return res.status(404).json({message: 'User not found'})
+        }
+
+        const addresses = user.addresses;
+        res.status(200).json(addresses);
+
+    } catch (error) {
+        res.status(500).json({message: 'Error retrieving address'})
+    }
 })

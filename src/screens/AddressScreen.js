@@ -1,6 +1,10 @@
-import { StyleSheet, Text, View, ScrollView, TextInput, Pressable } from 'react-native'
-import React,{useState} from 'react'
+import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Alert } from 'react-native'
+import React,{useState, useContext, useEffect} from 'react'
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwt_decode from "jwt-decode";
+import {userType} from '../UserContext'
+import axios from 'axios';
 
 const AddressScreen = () => {
   const navigation = useNavigation();
@@ -10,9 +14,49 @@ const AddressScreen = () => {
   const [street, setStreet] = useState("");
   const [landmark, setLandmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const {userId, setUserId} =useContext(userType);
+
+  useEffect(() => {
+    const fetchUser = async() => {
+      const token =await AsyncStorage.getItem('authToken'); 
+      const decodeToken = jwt_decode(token);
+      const userId = decodeToken.userId;
+      setUserId(userId);
+    }
+
+    fetchUser();
+
+  }, [])
+
+  console.log('userId: ', userId);
 
   const handleAddAddress = () => {
+    const address = {
+      name,
+      mobileNo,
+      houseNo,
+      street,
+      landmark,
+      postalCode
+    }
 
+    axios.post('http://192.168.219.209:8000/address', {userId, address}).then((response) => {
+      Alert.alert('Success', 'Address Added Successfully');
+      setName("");
+      setMobileNo("");
+      setHouseNo("");
+      setStreet("");
+      setLandmark("");
+      setPostalCode("");
+      
+      setTimeout(() => {
+        navigation.goBack();
+      },500)
+    }).catch((error) => {
+      Alert.alert("Error","Failed to add address")
+      console.log("error",error)
+    })
+    
   }
 
   return (
