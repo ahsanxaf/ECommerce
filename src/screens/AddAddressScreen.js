@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native'
-import React, {useState, useContext, useEffect} from 'react'
+import React, {useState, useContext, useEffect, useCallback} from 'react'
 import Header from '../components/Header'
 import { MaterialIcons } from "@expo/vector-icons";
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {userType} from '../UserContext'
 import axios from 'axios';
 import { Entypo } from "@expo/vector-icons";
@@ -27,6 +27,13 @@ const AddAddressScreen = () => {
       console.log("error", error);
     }
   };
+
+  //refresh the addresses when the component comes to the focus that us basically when we navigate back
+  useFocusEffect(
+    useCallback(() => {
+      fetchAddresses();
+    }, [])
+  )
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 50 }}>

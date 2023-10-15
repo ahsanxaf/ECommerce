@@ -6,6 +6,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import {useDispatch} from 'react-redux'
 import { incrementQuantity, decrementQuantity, removeFromCart } from '../redux/CartReducer';
+import {useNavigation} from '@react-navigation/native'
 
 const CartScreen = () => {
 
@@ -14,6 +15,7 @@ const CartScreen = () => {
   console.info(total)
 
   const dispatch = useDispatch();
+  const navigation =  useNavigation();
 
   const increaseQuantity = (item) => {
     dispatch(incrementQuantity(item))
@@ -36,7 +38,7 @@ const CartScreen = () => {
 
       <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text>
 
-      <Pressable style={styles.buyButton}>
+      <Pressable style={styles.buyButton} onPress={() => navigation.navigate('Confirm')}> 
         <Text>Proceed To Buy {cart.length} items</Text>
       </Pressable>
 
