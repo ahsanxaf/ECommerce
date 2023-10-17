@@ -68,7 +68,7 @@ const AddressScreen = () => {
             Add a new Address
         </Text>
         <TextInput
-          placeholderTextColor={"black"}
+          placeholderTextColor={"gray"}
           placeholder="Address"
           style={{
             padding: 10,
@@ -87,7 +87,7 @@ const AddressScreen = () => {
           <TextInput
             value={name}
             onChangeText={(text) => setName(text)}
-            placeholderTextColor={"black"}
+            placeholderTextColor={"gray"}
             style={{
               padding: 10,
               borderColor: "#D0D0D0",
@@ -107,7 +107,7 @@ const AddressScreen = () => {
           <TextInput
             value={mobileNo}
             onChangeText={(text) => setMobileNo(text)}
-            placeholderTextColor={"black"}
+            placeholderTextColor={"gray"}
             style={{
               padding: 10,
               borderColor: "#D0D0D0",
@@ -127,7 +127,7 @@ const AddressScreen = () => {
           <TextInput
             value={houseNo}
             onChangeText={(text) => setHouseNo(text)}
-            placeholderTextColor={"black"}
+            placeholderTextColor={"gray"}
             style={{
               padding: 10,
               borderColor: "#D0D0D0",
@@ -146,7 +146,7 @@ const AddressScreen = () => {
           <TextInput
             value={street}
             onChangeText={(text) => setStreet(text)}
-            placeholderTextColor={"black"}
+            placeholderTextColor={"gray"}
             style={{
               padding: 10,
               borderColor: "#D0D0D0",
@@ -163,7 +163,7 @@ const AddressScreen = () => {
           <TextInput
             value={landmark}
             onChangeText={(text) => setLandmark(text)}
-            placeholderTextColor={"black"}
+            placeholderTextColor={"gray"}
             style={{
               padding: 10,
               borderColor: "#D0D0D0",
@@ -181,7 +181,7 @@ const AddressScreen = () => {
           <TextInput
             value={postalCode}
             onChangeText={(text) => setPostalCode(text)}
-            placeholderTextColor={"black"}
+            placeholderTextColor={"gray"}
             style={{
               padding: 10,
               borderColor: "#D0D0D0",
