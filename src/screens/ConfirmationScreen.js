@@ -12,6 +12,8 @@ import { userType } from "../UserContext";
 import { Entypo } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import {useNavigation} from '@react-navigation/native'
+import RazorpayCheckout from "react-native-razorpay";
 
 const ConfirmationScreen = () => {
   const steps = [
@@ -26,6 +28,8 @@ const ConfirmationScreen = () => {
   const [selectedAddress, setSelectedAdress] = useState("");
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const cart = useSelector((state) => state.cart.cart);
   const total = cart
@@ -47,6 +51,77 @@ const ConfirmationScreen = () => {
       console.log("error", error);
     }
   };
+  const handlePlaceOrder = async () => {
+    try {
+      const orderData = {
+        userId: userId,
+        cartItems: cart,
+        totalPrice: total,
+        shippingAddress: selectedAddress,
+        paymentMethod: selectedOption,
+      };
+
+      const response = await axios.post(
+        "http://localhost:8000/orders",
+        orderData
+      );
+      if (response.status === 200) {
+        navigation.navigate("Order");
+        dispatch(cleanCart());
+        console.log("order created successfully", response.data);
+      } else {
+        console.log("error creating order", response.data);
+      }
+    } catch (error) {
+      console.log("errror", error);
+    }
+  };
+
+  const pay = async () => {
+    try {
+      const options = {
+        description: "Adding To Wallet",
+        currency: "PKR",
+        name: "Amazon",
+        key: "rzp_test_E3GWYimxN7YMk8",
+        amount: total * 100,
+        prefill: {
+          email: "void@razorpay.com",
+          contact: "9191919191",
+          name: "RazorPay Software",
+        },
+        theme: { color: "#F37254" },
+      };
+
+      const data = await RazorpayCheckout.open(options);
+
+      console.log(data)
+
+      const orderData = {
+        userId: userId,
+        cartItems: cart,
+        totalPrice: total,
+        shippingAddress: selectedAddress,
+        paymentMethod: "card",
+      };
+
+      const response = await axios.post(
+        "http://localhost:8000/orders",
+        orderData
+      );
+      if (response.status === 200) {
+        navigation.navigate("Order");
+        dispatch(cleanCart());
+        console.log("order created successfully", response.data);
+      } else {
+        console.log("error creating order", response.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
   return (
     <ScrollView style={styles.container}>
       <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
